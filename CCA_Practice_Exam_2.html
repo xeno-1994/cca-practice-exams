@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CCA Foundations — Practice Exam 2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=IBM+Plex+Mono:wght@400;500;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0f1419;
+    --paper: #fafafa;
+    --paper-2: #eef2f6;
+    --accent: #1e40af;
+    --accent-2: #0891b2;
+    --muted: #64748b;
+    --good: #15803d;
+    --bad: #b91c1c;
+    --warn: #b45309;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--paper); color: var(--ink); font-family: 'IBM Plex Sans', sans-serif; line-height: 1.55; }
+  body { min-height: 100vh; padding: 2rem 1rem; }
+  .wrap { max-width: 900px; margin: 0 auto; }
+
+  header.exam-head {
+    border-left: 6px solid var(--accent);
+    padding: 1rem 1.5rem;
+    margin-bottom: 2rem;
+    background: var(--paper-2);
+    display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .masthead { font-family: 'DM Serif Display', serif; font-size: clamp(1.6rem, 4vw, 2.6rem); letter-spacing: -0.01em; line-height: 1.1; }
+  .masthead .num { color: var(--accent); }
+  .meta { font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); text-align: right; }
+  .meta strong { color: var(--ink); display: block; font-size: 0.85rem; }
+
+  .toolbar {
+    position: sticky; top: 0; z-index: 50;
+    background: var(--paper);
+    border-bottom: 2px solid var(--ink);
+    padding: 0.75rem 1rem;
+    margin: -0.5rem 0 2rem;
+    display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+    flex-wrap: wrap;
+    box-shadow: 0 2px 8px rgba(15, 20, 25, 0.05);
+  }
+  .timer { font-family: 'IBM Plex Mono', monospace; font-size: 1.15rem; font-weight: 700; }
+  .timer.warn { color: var(--warn); }
+  .timer.danger { color: var(--bad); animation: pulse 1s infinite; }
+  @keyframes pulse { 50% { opacity: 0.5; } }
+  .progress { font-family: 'IBM Plex Mono', monospace; font-size: 0.85rem; color: var(--muted); }
+  .progress strong { color: var(--ink); }
+
+  .intro { background: var(--paper); border: 2px solid var(--ink); padding: 2rem; margin-bottom: 2rem; border-radius: 4px; }
+  .intro h2 { font-family: 'DM Serif Display', serif; font-size: 1.6rem; margin-bottom: 0.75rem; }
+  .intro p { margin-bottom: 0.75rem; font-size: 0.95rem; }
+  .intro ul { margin: 0.5rem 0 1rem 1.25rem; font-size: 0.9rem; }
+  .intro li { margin-bottom: 0.3rem; }
+  .domain-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 1rem; }
+  .tag { font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.3rem 0.6rem; background: var(--paper-2); border-left: 3px solid var(--accent); }
+  .tag .pct { color: var(--accent); font-weight: 700; margin-left: 0.3rem; }
+
+  .question {
+    border: 1px solid var(--ink);
+    background: var(--paper);
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(15, 20, 25, 0.04);
+  }
+  .question.answered { background: #f8fafc; border-color: var(--accent); }
+  .q-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--paper-2); }
+  .q-num { font-family: 'IBM Plex Mono', monospace; font-size: 0.8rem; color: var(--muted); }
+  .q-num strong { color: var(--ink); font-size: 1.05rem; }
+  .q-domain { font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.25rem 0.6rem; background: var(--accent); color: white; border-radius: 2px; }
+  .q-scenario { font-size: 0.92rem; margin-bottom: 1rem; padding: 0.75rem; background: var(--paper-2); border-left: 3px solid var(--accent-2); }
+  .q-prompt { font-weight: 600; margin-bottom: 1rem; font-size: 1rem; }
+  .options { list-style: none; }
+  .options li {
+    border: 1px solid var(--muted);
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    border-radius: 3px;
+  }
+  .options li:hover { border-color: var(--accent); background: var(--paper-2); }
+  .options li.selected { background: var(--accent); color: white; border-color: var(--accent); }
+  .options li.selected .opt-letter { background: white; color: var(--accent); }
+  .options label { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.75rem 1rem; cursor: pointer; }
+  .opt-letter { font-family: 'IBM Plex Mono', monospace; font-weight: 700; min-width: 1.6rem; padding: 0.15rem 0.45rem; background: var(--paper-2); border-radius: 2px; text-align: center; font-size: 0.8rem; }
+  .options input { display: none; }
+
+  .submit-bar { padding: 2rem 0; text-align: center; }
+  button.submit { font-family: 'IBM Plex Sans', sans-serif; font-size: 1.1rem; font-weight: 600; padding: 1rem 2.5rem; background: var(--accent); color: white; border: none; cursor: pointer; border-radius: 3px; letter-spacing: 0.02em; transition: background 0.2s; }
+  button.submit:hover { background: var(--ink); }
+  button.submit:disabled { background: var(--muted); cursor: not-allowed; }
+
+  .results { display: none; }
+  .results.show { display: block; animation: fadeIn 0.4s; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .score-hero { background: linear-gradient(135deg, var(--ink) 0%, var(--accent) 100%); color: white; padding: 2.5rem; text-align: center; margin-bottom: 2rem; border-radius: 4px; }
+  .score-hero .pct-big { font-family: 'DM Serif Display', serif; font-size: clamp(4rem, 12vw, 7rem); line-height: 1; }
+  .score-hero .pct-big.pass { color: #86efac; }
+  .score-hero .pct-big.fail { color: #fca5a5; }
+  .score-hero .verdict { font-family: 'IBM Plex Mono', monospace; text-transform: uppercase; letter-spacing: 0.2em; font-size: 0.9rem; margin-top: 0.5rem; }
+  .score-hero .raw { font-family: 'IBM Plex Mono', monospace; margin-top: 1rem; opacity: 0.8; font-size: 0.85rem; }
+
+  .domain-breakdown { margin-bottom: 2rem; }
+  .domain-breakdown h3 { font-family: 'DM Serif Display', serif; font-size: 1.5rem; margin-bottom: 1rem; }
+  .domain-row { display: grid; grid-template-columns: 1fr auto; gap: 1rem; padding: 0.75rem 0; border-bottom: 1px solid var(--paper-2); align-items: center; }
+  .domain-row .d-name { font-weight: 600; }
+  .domain-row .d-name span { display: block; font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 400; }
+  .domain-row .d-bar { grid-column: 1 / -1; height: 8px; background: var(--paper-2); border-radius: 4px; overflow: hidden; }
+  .domain-row .d-bar .fill { height: 100%; background: var(--accent); transition: width 0.4s; }
+  .domain-row .d-bar .fill.pass { background: var(--good); }
+  .domain-row .d-bar .fill.fail { background: var(--bad); }
+  .d-score { font-family: 'IBM Plex Mono', monospace; font-weight: 700; }
+
+  .review h3 { font-family: 'DM Serif Display', serif; font-size: 1.5rem; margin: 2rem 0 1rem; }
+  .review-q { border: 1px solid var(--muted); padding: 1.25rem; margin-bottom: 1rem; background: var(--paper); border-radius: 3px; }
+  .review-q.correct { border-left: 6px solid var(--good); }
+  .review-q.incorrect { border-left: 6px solid var(--bad); }
+  .review-q.unanswered { border-left: 6px solid var(--muted); background: var(--paper-2); }
+  .review-q .status { font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem; font-weight: 700; }
+  .review-q .status.correct { color: var(--good); }
+  .review-q .status.incorrect { color: var(--bad); }
+  .review-q .status.unanswered { color: var(--muted); }
+  .review-q .q-text { font-weight: 600; margin-bottom: 0.75rem; }
+  .review-q .ans-line { font-size: 0.9rem; margin: 0.3rem 0; padding: 0.4rem 0.6rem; border-radius: 2px; }
+  .review-q .ans-line.your { background: rgba(185, 28, 28, 0.08); }
+  .review-q .ans-line.your.correct { background: rgba(21, 128, 61, 0.08); }
+  .review-q .ans-line.correct-ans { background: rgba(21, 128, 61, 0.12); border-left: 3px solid var(--good); }
+  .review-q .explanation { margin-top: 0.75rem; padding: 0.75rem; background: var(--paper-2); border-left: 3px solid var(--accent); font-size: 0.88rem; }
+  .review-q .explanation strong { color: var(--accent); }
+
+  .restart { margin: 2rem 0; text-align: center; }
+  .restart button { font-family: 'IBM Plex Mono', monospace; text-transform: uppercase; letter-spacing: 0.1em; font-size: 0.85rem; padding: 0.75rem 1.5rem; background: transparent; border: 2px solid var(--ink); cursor: pointer; border-radius: 3px; }
+  .restart button:hover { background: var(--ink); color: white; }
+
+  footer { text-align: center; padding: 2rem 0 1rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+  .disclaimer { font-size: 0.7rem; color: var(--muted); font-style: italic; margin-top: 0.5rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="exam-head">
+  <div class="masthead">CCA Foundations<br><span class="num">Practice Exam 02</span></div>
+  <div class="meta">
+    <strong>UNOFFICIAL</strong>
+    60 questions · 120 minutes<br>scenario-based · proctored format
+  </div>
+</header>
+
+<div class="intro" id="intro">
+  <h2>Before you begin</h2>
+  <p>This is the second of three unofficial practice exams for Anthropic's <strong>Claude Certified Architect — Foundations (CCA-F)</strong>. The question bank is entirely new and covers different scenarios from Exam 1.</p>
+  <ul>
+    <li>Time limit: <strong>120 minutes</strong> from the moment you click "Begin".</li>
+    <li>60 questions, weighted to match the official blueprint.</li>
+    <li>One answer per question; change your mind freely before submitting.</li>
+    <li>Auto-submits when time runs out. Passing threshold (mock): <strong>70%</strong>.</li>
+  </ul>
+  <div class="domain-tags">
+    <span class="tag">Agentic Architecture<span class="pct">27%</span></span>
+    <span class="tag">Claude Code Workflows<span class="pct">20%</span></span>
+    <span class="tag">Prompt Engineering<span class="pct">20%</span></span>
+    <span class="tag">Tool Design & MCP<span class="pct">18%</span></span>
+    <span class="tag">Context Management<span class="pct">15%</span></span>
+  </div>
+  <div style="margin-top:1.5rem;text-align:center;">
+    <button class="submit" onclick="startExam()">Begin Exam</button>
+  </div>
+  <p class="disclaimer">Disclaimer: independent practice content. Not affiliated with or endorsed by Anthropic. Real exam questions, weighting, and scoring may differ.</p>
+</div>
+
+<div id="examArea" style="display:none;">
+  <div class="toolbar">
+    <div class="progress">Answered: <strong id="answeredCount">0</strong> / 60</div>
+    <div class="timer" id="timer">120:00</div>
+  </div>
+  <div id="questionsContainer"></div>
+  <div class="submit-bar">
+    <button class="submit" onclick="submitExam()">Submit Exam</button>
+  </div>
+</div>
+
+<div class="results" id="resultsArea">
+  <div class="score-hero">
+    <div class="pct-big" id="scorePct">—</div>
+    <div class="verdict" id="verdict">—</div>
+    <div class="raw" id="rawScore">—</div>
+  </div>
+  <div class="domain-breakdown">
+    <h3>By domain</h3>
+    <div id="domainBreakdown"></div>
+  </div>
+  <div class="review">
+    <h3>Question review</h3>
+    <div id="reviewContainer"></div>
+  </div>
+  <div class="restart">
+    <button onclick="location.reload()">Retake exam</button>
+  </div>
+</div>
+
+<footer>
+  Unofficial CCA-F practice mock · Exam 2 of 3 · Built for personal study
+</footer>
+
+</div>
+
+<script>
+const DOMAIN_NAMES = {
+  AA: { name: 'Agentic Architecture & Orchestration', weight: 27 },
+  CC: { name: 'Claude Code Configuration & Workflows', weight: 20 },
+  PE: { name: 'Prompt Engineering & Structured Output', weight: 20 },
+  TM: { name: 'Tool Design & MCP Integration', weight: 18 },
+  CM: { name: 'Context Management & Reliability', weight: 15 }
+};
+
+const QUESTIONS = [
+  // ===== AGENTIC ARCHITECTURE (16) =====
+  { d: 'AA', q: 'A pharmaceutical research firm is building an agent that reviews clinical trial protocols. The agent must consult 4 separate guideline documents, run regulatory checks, and cross-reference adverse-event databases. What is the strongest argument for a multi-agent decomposition here?',
+    s: 'Currently the team uses a single agent with all 12 tools available simultaneously, and observe the model frequently picks the wrong tool or skips required checks.',
+    o: [
+      'Multi-agent always outperforms single-agent.',
+      'Each review step has distinct expertise requirements, narrow tool subsets, and can be quality-gated independently, reducing the combinatorial decision space at each turn.',
+      'Multi-agent uses fewer tokens overall.',
+      'Single agents cannot handle regulatory work.'
+    ],
+    a: 1,
+    e: 'The wrong-tool symptom and skipped checks point to decision overload from a flat 12-tool surface. Decomposition gives each sub-agent a narrow scope and lets you quality-gate per stage. Multi-agent is not universally better, often costs more tokens, and single agents can certainly handle regulatory work — the right answer is about the specific symptoms.' },
+
+  { d: 'AA', q: 'You are designing a refund-processing agent. Refunds over $500 require human approval; everything below is auto-approved. What is the cleanest architectural pattern?',
+    s: null,
+    o: [
+      'Have the agent ask the user "do you want approval?" in plain English on every refund.',
+      'Implement a single process_refund tool that branches internally: low-value refunds execute directly; high-value refunds enqueue an approval task and return a pending-state result.',
+      'Use temperature 0 so behaviour is deterministic.',
+      'Give the agent two completely unrelated tools and hope it picks correctly.'
+    ],
+    a: 1,
+    e: 'Encoding policy inside the tool means the rule survives prompt-injection, agent confusion, and version changes. The agent does not need to reason about thresholds. Natural-language approval (A) is fragile; temperature (C) is irrelevant to policy; unrelated tools (D) invites the very confusion you want to avoid.' },
+
+  { d: 'AA', q: 'An agent loops on a search-summarise-search cycle and never converges. Logs show each loop refines the query slightly. What is the single best intervention?',
+    s: null,
+    o: [
+      'Switch to a larger model.',
+      'Add an explicit budget (e.g. max 3 searches), require the model to commit to an answer with whatever evidence it has when budget is hit, and surface confidence to the user.',
+      'Increase temperature.',
+      'Remove the search tool.'
+    ],
+    a: 1,
+    e: 'Convergence problems are best solved with explicit budgets and forced commitment, not bigger models. Confidence-aware output lets downstream code handle low-confidence cases gracefully.' },
+
+  { d: 'AA', q: 'In a planner-executor pattern, the planner produces a plan, then the executor carries it out. Which is the most common failure mode?',
+    s: null,
+    o: [
+      'The planner runs out of tokens.',
+      'The executor blindly follows a plan that has become invalid because reality changed after planning (e.g. an API now requires different inputs). The fix is allowing re-planning when execution fails.',
+      'The planner always produces the same plan.',
+      'The executor uses too many tools.'
+    ],
+    a: 1,
+    e: 'Plans go stale. Production planner-executor systems need a replanning loop triggered by execution failures or environment changes, not blind execution of a frozen plan.' },
+
+  { d: 'AA', q: 'You want to add observability to a production agent. The most useful single signal to log is:',
+    s: null,
+    o: [
+      'Total response length only.',
+      'A per-turn trace including model inputs, tool calls with arguments, tool results, and the model\'s response — enough to reconstruct the trajectory.',
+      'Only the final user-facing answer.',
+      'CPU usage on the host.'
+    ],
+    a: 1,
+    e: 'Agent debugging requires trajectory-level traces — what the model saw, what it did, what came back. Output-only logging hides the decisions; CPU is irrelevant to model behaviour.' },
+
+  { d: 'AA', q: 'A user reports an agent gave a wrong answer "yesterday at 3pm". You need to debug. The single most important thing to have logged is:',
+    s: null,
+    o: [
+      'The exact model version, system prompt, tools available, and the full message trajectory for that conversation.',
+      'The agent\'s mood.',
+      'Only the user\'s final question.',
+      'A summary written by another LLM.'
+    ],
+    a: 0,
+    e: 'Reproducibility requires the full input set. Model version pinning matters because behaviour drifts across versions. LLM-written summaries lose detail; the user\'s question alone is insufficient.' },
+
+  { d: 'AA', q: 'An orchestrator dispatches the same task to 3 sub-agents and votes on the result. When is this most justified?',
+    s: null,
+    o: [
+      'Always — three heads are better than one.',
+      'For high-stakes one-shot judgements (e.g. content moderation labels) where you can tolerate 3x cost and latency to reduce variance.',
+      'For multi-turn coding tasks.',
+      'For simple lookups.'
+    ],
+    a: 1,
+    e: 'Self-consistency / ensemble voting trades cost for reduced variance and works for one-shot judgements. It is wasteful on multi-turn or trivial work.' },
+
+  { d: 'AA', q: 'Which is the strongest indication you should keep a workflow as a deterministic pipeline rather than an agent?',
+    s: null,
+    o: [
+      'The steps are well-defined, the input shape is predictable, the decision points are simple, and the cost of model variance outweighs the benefit of flexibility.',
+      'The pipeline is short.',
+      'You have a small team.',
+      'The data is sensitive.'
+    ],
+    a: 0,
+    e: 'Agents earn their cost when flexibility and judgement matter. If the workflow is mechanical and predictable, a deterministic pipeline is cheaper, faster, and more reliable.' },
+
+  { d: 'AA', q: 'You are designing an agent to operate over a user\'s email. What is the most important safety boundary?',
+    s: null,
+    o: [
+      'Limit the agent\'s vocabulary.',
+      'Apply principle of least privilege: separate read scopes from send/delete; require explicit user confirmation before any outbound message or destructive action.',
+      'Have the agent always reply in formal English.',
+      'Block the agent from reading attachments.'
+    ],
+    a: 1,
+    e: 'Least privilege + human-in-the-loop for irreversible actions is the standard safety pattern. Email is a high-leverage surface: sending and deleting must be gated.' },
+
+  { d: 'AA', q: 'An agent occasionally produces an output that quotes a fictional API endpoint. The endpoint does not exist. This is most accurately described as:',
+    s: null,
+    o: [
+      'A network error.',
+      'Hallucination — the model invented a plausible-looking but unreal artifact. Mitigations include grounding the model in actual API docs (RAG or MCP) and validating outputs against a real schema.',
+      'A bug in the API client.',
+      'User error.'
+    ],
+    a: 1,
+    e: 'Invented APIs are textbook hallucination. The fix is grounding (give the model real docs) and verification (reject outputs that reference unknown endpoints).' },
+
+  { d: 'AA', q: 'You add a memory tool that lets the agent store notes between turns. What is the main risk?',
+    s: null,
+    o: [
+      'No risk — memory always helps.',
+      'Bad or hallucinated entries pollute future decisions; without invalidation or review, errors compound over time.',
+      'The agent will become sentient.',
+      'Memory cannot be implemented.'
+    ],
+    a: 1,
+    e: 'Memory is amplifying: it makes good context stickier and bad context stickier. Production memory systems need write-time validation and the ability to invalidate or supersede entries.' },
+
+  { d: 'AA', q: 'A coding agent makes 30 edits and then runs the test suite, which fails. What is the most efficient debugging pattern for the agent itself to use?',
+    s: null,
+    o: [
+      'Revert all 30 edits and start over.',
+      'Read the failing test output, identify which files the failure points to, inspect only those edits, and form a hypothesis before making any new change.',
+      'Make 30 more edits at random.',
+      'Ask the user to debug.'
+    ],
+    a: 1,
+    e: 'Read-then-hypothesise is the same discipline a human engineer uses. Random edits make things worse; full revert wastes correct work; passing the buck to the user defeats the purpose.' },
+
+  { d: 'AA', q: 'When sub-agents communicate, the best information unit to pass between them is:',
+    s: null,
+    o: [
+      'The entire raw conversation history of the sub-agent.',
+      'A structured, summarised result containing only the artefacts the orchestrator needs (decisions, outputs, flagged issues), not internal reasoning.',
+      'A picture of the user.',
+      'The sub-agent\'s system prompt.'
+    ],
+    a: 1,
+    e: 'Sub-agents exist to contain noise. Passing raw histories defeats that purpose. Structured summaries — decisions, outputs, flags — are what the orchestrator can actually use.' },
+
+  { d: 'AA', q: 'A research agent is designed to be "exhaustive". After 4 hours of work, it has produced thousands of low-value notes. The architectural fix is:',
+    s: null,
+    o: [
+      'Replace the LLM with a different vendor\'s model.',
+      'Set explicit success criteria upfront (what "done" looks like), enforce a budget on calls/time, and require periodic synthesis steps that prune low-value findings.',
+      'Increase max_tokens.',
+      'Run the agent twice.'
+    ],
+    a: 1,
+    e: '"Exhaustive" without success criteria is a runaway. Define done-states, budget the work, and force periodic synthesis to prune noise — these are the architectural levers.' },
+
+  { d: 'AA', q: 'The orchestrator-worker pattern works best when:',
+    s: null,
+    o: [
+      'There is only one task and it is trivial.',
+      'You have a fan-out workload of independent sub-tasks that can be processed in parallel, with a final aggregation step.',
+      'The workflow is a strict sequential chain.',
+      'You want to confuse the model.'
+    ],
+    a: 1,
+    e: 'Orchestrator-worker shines on parallelisable fan-out (e.g. "summarise these 50 documents"). Sequential chains do not need it; trivial tasks do not justify it.' },
+
+  { d: 'AA', q: 'A long-horizon agent crashes after step 47 of 60. The cleanest recovery design is:',
+    s: null,
+    o: [
+      'Restart from step 1.',
+      'Persist completed-step results to durable storage with a checkpoint id, so on restart the agent skips completed steps and resumes from the failed one.',
+      'Email the user a stack trace.',
+      'Reduce step count to 10.'
+    ],
+    a: 1,
+    e: 'Long workflows must be checkpointed. Restarting from scratch wastes prior work and may not even be safe if steps have side effects. Reducing step count is throwing away requirements.' },
+
+  // ===== CLAUDE CODE WORKFLOWS (12) =====
+  { d: 'CC', q: 'Your team\'s monorepo has 4 distinct services in subdirectories. Each has different testing commands, linters, and conventions. How should you structure CLAUDE.md?',
+    s: null,
+    o: [
+      'One giant CLAUDE.md at the root covering everything.',
+      'A concise root CLAUDE.md describing the monorepo layout and shared conventions, plus a CLAUDE.md inside each service directory with service-specific commands and conventions.',
+      'No CLAUDE.md anywhere; keep instructions in chat.',
+      'A CLAUDE.md per source file.'
+    ],
+    a: 1,
+    e: 'Nested CLAUDE.md scales context: only the relevant files load when Claude Code is working in that area. A single mega-file wastes context; chat-only is forgettable; per-file is overkill.' },
+
+  { d: 'CC', q: 'You want to prevent Claude Code from ever running `rm -rf` in a particular project. The most reliable mechanism is:',
+    s: null,
+    o: [
+      'A polite note in CLAUDE.md.',
+      'A PreToolUse hook on Bash that inspects the command and exits non-zero if it matches dangerous patterns, blocking execution before it runs.',
+      'A higher temperature.',
+      'Disable bash entirely.'
+    ],
+    a: 1,
+    e: 'PreToolUse hooks can intercept and block dangerous commands. Polite notes are advisory; disabling bash entirely defeats the assistant; temperature is unrelated.' },
+
+  { d: 'CC', q: 'A developer wants a /pr-review slash command that, when invoked, has Claude Code read the current branch\'s diff, check it against project conventions, and post review comments. The right place to define this is:',
+    s: null,
+    o: [
+      'In the developer\'s personal note file.',
+      'As a custom slash command checked into the repository, so the whole team benefits.',
+      'Re-typed each time in chat.',
+      'In the model\'s system prompt baked into the binary.'
+    ],
+    a: 1,
+    e: 'Custom slash commands at the repo level standardise and share useful workflows. Personal notes and chat retyping waste the work; baking into the binary is not user-modifiable.' },
+
+  { d: 'CC', q: 'A subagent invocation in Claude Code is most useful when:',
+    s: null,
+    o: [
+      'You need to permanently fork the conversation.',
+      'You want a side investigation (e.g. "search the codebase for all callers of X") to happen in its own context and return only a concise summary, keeping the main context clean.',
+      'You want to disable hooks.',
+      'You want to switch the API key.'
+    ],
+    a: 1,
+    e: 'Subagents are scoped exploration: noisy work happens in their context, only the summary comes back. They do not fork the main conversation, disable hooks, or change auth.' },
+
+  { d: 'CC', q: 'You connect a corporate Slack MCP server to Claude Code. Which permission default is safest?',
+    s: null,
+    o: [
+      'Auto-approve all Slack tool calls.',
+      'Require explicit confirmation for any tool that sends a message or modifies state; allow read-only tools to run freely.',
+      'Disallow Slack tools entirely.',
+      'Send a copy of every Slack interaction to the user\'s email.'
+    ],
+    a: 1,
+    e: 'Mutations require confirmation; reads can flow. Auto-approving mutations risks accidental sends; blocking everything defeats the integration; email mirroring is noise.' },
+
+  { d: 'CC', q: 'You want Claude Code to behave differently for production vs experimental projects. The cleanest mechanism is:',
+    s: null,
+    o: [
+      'Maintain two installations of Claude Code.',
+      'Different per-project CLAUDE.md files plus project-level settings (permissions, hooks, MCP servers) so each project carries its own configuration.',
+      'Manually change global settings every time you switch.',
+      'Use a different shell.'
+    ],
+    a: 1,
+    e: 'Per-project configuration is the native pattern. Two installs is wasteful; manual switching is error-prone; shells are unrelated.' },
+
+  { d: 'CC', q: 'A hook fails (returns non-zero) during a PostToolUse on Edit. The expected Claude Code behaviour is:',
+    s: null,
+    o: [
+      'Silently ignore the hook failure.',
+      'Surface the hook failure to the model and/or user, so the failed condition can be addressed before continuing.',
+      'Crash the entire Claude Code process.',
+      'Disable the hook permanently.'
+    ],
+    a: 1,
+    e: 'Hooks exist to enforce conditions; their failures must be visible. Silent ignore defeats the point; crashing is too brittle; auto-disabling hides intent.' },
+
+  { d: 'CC', q: 'You want Claude Code, when running in headless CI mode, to never prompt for permission. The right approach is:',
+    s: null,
+    o: [
+      'Hope nothing dangerous happens.',
+      'Pre-configure a strict permission policy in the project\'s settings that explicitly enumerates allowed tool patterns, so the CI run is deterministic.',
+      'Run with all permissions auto-approved.',
+      'Have the CI job click through manually.'
+    ],
+    a: 1,
+    e: 'Headless CI needs explicit, conservative pre-configuration: enumerate what is allowed, deny everything else. Auto-approve everything is unsafe; manual clicking defeats automation.' },
+
+  { d: 'CC', q: 'A teammate complains Claude Code keeps suggesting Python idioms in a TypeScript codebase. The correct fix is:',
+    s: null,
+    o: [
+      'Ignore it.',
+      'Add a clear note in CLAUDE.md that this is a TypeScript project, state the conventions (e.g. functional components, no any, etc.), and possibly include a small style example.',
+      'Switch models.',
+      'Reinstall Claude Code.'
+    ],
+    a: 1,
+    e: 'Repo-scoped guidance belongs in CLAUDE.md. Language conventions are exactly the use case. Switching models and reinstalling are unrelated.' },
+
+  { d: 'CC', q: 'For a security-sensitive project, what is the strongest argument against giving Claude Code unrestricted shell access?',
+    s: null,
+    o: [
+      'Shell commands are slow.',
+      'Even with the best intentions, a prompt-injected document or a model error could trigger an irreversible destructive command; granting shell only via narrow hooks/wrappers limits blast radius.',
+      'Shell commands are deprecated.',
+      'The user might prefer a GUI.'
+    ],
+    a: 1,
+    e: 'The risk is blast radius from confused or compromised behaviour. Constraining shell to narrow wrappers limits damage even when something goes wrong.' },
+
+  { d: 'CC', q: 'You want to give Claude Code awareness of an internal architecture diagram. The diagram is an image. The best practice is:',
+    s: null,
+    o: [
+      'Embed the binary image in CLAUDE.md.',
+      'Convert the diagram to a textual representation (mermaid, ASCII, or a written architectural summary) and include it in CLAUDE.md, with the image as a reference asset.',
+      'Hope Claude reads minds.',
+      'Email it to Claude.'
+    ],
+    a: 1,
+    e: 'Text descriptions of architecture are what the model can actually reason over consistently. Images are useful for the human but secondary for the model\'s sustained context.' },
+
+  { d: 'CC', q: 'A new team member runs Claude Code in your repo for the first time and gets confused output. The most likely cause is:',
+    s: null,
+    o: [
+      'The model is broken.',
+      'CLAUDE.md is missing, outdated, or sparse, so Claude Code lacks the project context it needs.',
+      'They typed the wrong command.',
+      'Their terminal is too small.'
+    ],
+    a: 1,
+    e: 'A good CLAUDE.md is the onboarding doc for both humans and the agent. If new users get bad output, the document is usually the gap.' },
+
+  // ===== PROMPT ENGINEERING (12) =====
+  { d: 'PE', q: 'A prompt that processes user-uploaded contracts is starting to drift in long calls. Which structural fix is most reliable?',
+    s: null,
+    o: [
+      'Put the contract first, then the instructions at the very end of the user turn, right before the question.',
+      'Bury the question inside the contract text.',
+      'Send the same prompt twice.',
+      'Set max_tokens lower.'
+    ],
+    a: 0,
+    e: 'Long input + instructions-last (with the actual question just before the response area) is the canonical pattern. Putting the question first or buried in the middle causes drift.' },
+
+  { d: 'PE', q: 'When are few-shot examples MOST valuable?',
+    s: null,
+    o: [
+      'For trivial tasks the model has done a million times in training.',
+      'For tasks with a custom format, narrow style requirements, or rare label space the model is unlikely to default to correctly.',
+      'For tasks that are impossible.',
+      'Never — they always hurt.'
+    ],
+    a: 1,
+    e: 'Few-shot earns its token cost when the task has custom format/style/labels. For familiar tasks, instructions alone suffice.' },
+
+  { d: 'PE', q: 'A system prompt is 8,000 tokens long and is sent on every call. The single best optimisation is:',
+    s: null,
+    o: [
+      'Rewrite it to be shorter without losing intent, and enable prompt caching for the stable portion.',
+      'Send it twice for emphasis.',
+      'Translate it to a more concise language.',
+      'Compress it with gzip.'
+    ],
+    a: 0,
+    e: 'Cut what you can, cache what you cannot. Prompt caching gives near-zero marginal cost on the cached prefix.' },
+
+  { d: 'PE', q: 'You want Claude to output one of three specific labels: "approved", "rejected", or "needs_review". The most reliable way to enforce this is:',
+    s: null,
+    o: [
+      'Ask politely in the prompt.',
+      'Define a tool with an enum parameter listing the three values, and have the model call that tool with the label as its argument.',
+      'Use a high temperature.',
+      'Use a smaller model.'
+    ],
+    a: 1,
+    e: 'Tool use with enum parameters provides schema-level enforcement. JSON schema with enums or prefilled structured output are alternatives, but plain text instruction is the weakest option.' },
+
+  { d: 'PE', q: 'You give Claude a long, conflicting set of instructions. The most likely outcome is:',
+    s: null,
+    o: [
+      'The model refuses to respond.',
+      'Inconsistent behaviour from call to call as the model resolves the conflict differently each time; the fix is to remove conflicts and prioritise explicitly.',
+      'The API throws an error.',
+      'The model always picks the first instruction.'
+    ],
+    a: 1,
+    e: 'Contradictions create variance. The fix is to make trade-offs explicit and conditional, not stack more instructions.' },
+
+  { d: 'PE', q: 'Extended thinking (where supported) helps most on:',
+    s: null,
+    o: [
+      'Simple lookups.',
+      'Multi-step reasoning problems where the model benefits from working out intermediate steps before committing to a final answer.',
+      'Creative writing of short poems.',
+      'Translating common phrases.'
+    ],
+    a: 1,
+    e: 'Extended thinking is for genuine reasoning load. Simple lookups and short generative tasks do not benefit and just cost more.' },
+
+  { d: 'PE', q: 'A model is producing JSON but occasionally includes a leading "Sure! Here is the JSON:" preamble. The cleanest fix is:',
+    s: null,
+    o: [
+      'Add another instruction "really, no preamble".',
+      'Prefill the assistant turn with the opening { (or [) character so the model continues from there.',
+      'Use a longer system prompt.',
+      'Strip preambles with regex post-hoc.'
+    ],
+    a: 1,
+    e: 'Assistant prefill forces the response to start in the desired format. Stricter instructions help less; regex post-processing is fragile.' },
+
+  { d: 'PE', q: 'You want Claude to refuse off-topic questions for a customer-support bot. The most robust approach is:',
+    s: null,
+    o: [
+      'Hope the model figures it out.',
+      'In the system prompt: state the bot\'s scope precisely, give 2-3 examples of off-topic questions and the correct refusal pattern, and provide a polite redirect.',
+      'Lower the temperature to 0.',
+      'Use a larger model.'
+    ],
+    a: 1,
+    e: 'Scope + examples + redirect is the standard recipe for scoped assistants. Temperature and model size are not substitutes for clarity.' },
+
+  { d: 'PE', q: 'A prompt asks Claude to summarise a meeting transcript. Outputs vary wildly in length and structure across calls. The fix is:',
+    s: null,
+    o: [
+      'Specify exactly: a 150-200 word summary, three bullet points of decisions, and a one-line next action — and show one full worked example.',
+      'Increase temperature.',
+      'Ask for "a good summary".',
+      'Send the transcript twice.'
+    ],
+    a: 0,
+    e: 'Vague length and structure produce variance. Explicit format with a worked example collapses the variance to acceptable bounds.' },
+
+  { d: 'PE', q: 'For a critical compliance check, you ask Claude to "answer yes or no with reasoning". The reasoning often contradicts the yes/no. The fix is:',
+    s: null,
+    o: [
+      'Ask for the reasoning first (chain-of-thought), then the yes/no answer at the end, so the conclusion is grounded in the analysis rather than vice versa.',
+      'Lower max_tokens.',
+      'Use a different vendor.',
+      'Ask only for yes/no.'
+    ],
+    a: 0,
+    e: 'Order matters: reasoning first, conclusion last, so the answer is consequent to the analysis. Ordering the other way invites post-hoc rationalisation.' },
+
+  { d: 'PE', q: 'Untrusted text from an external user appears in a system that also has agentic tools. The strongest prompt-engineering mitigation against injection is:',
+    s: null,
+    o: [
+      'Concatenate the text into the system prompt verbatim.',
+      'Place it in a clearly tagged region (e.g. <user_input>...</user_input>), instruct the model that its contents are data not instructions, and combine with downstream approval gates for sensitive actions.',
+      'Translate it to Latin.',
+      'Strip all whitespace.'
+    ],
+    a: 1,
+    e: 'Tag-and-disclaim is the first layer, combined with downstream approval for risky actions. No prompt-level technique is sufficient alone — defence in depth.' },
+
+  { d: 'PE', q: 'Which of the following is the BEST description of how Claude tends to interpret very precise role-setting in a system prompt (e.g. "You are a senior tax attorney")?',
+    s: null,
+    o: [
+      'It does nothing.',
+      'It shifts tone, vocabulary, default assumptions, and stylistic register in ways that often improve specialised performance, though it does not literally make the model an attorney.',
+      'It unlocks hidden expertise modes.',
+      'It causes the model to refuse general questions.'
+    ],
+    a: 1,
+    e: 'Role-setting reliably shapes tone, defaults, and style, which can lift performance in domain tasks. It does not unlock literal expertise the model lacks and is not an exemption from safety policy.' },
+
+  // ===== TOOL DESIGN & MCP (11) =====
+  { d: 'TM', q: 'You expose three tools: search_users, get_user, update_user. The model frequently calls get_user when it should call search_users. The most likely cause is:',
+    s: null,
+    o: [
+      'The descriptions are too similar; the model cannot reliably disambiguate. Rewrite each with clear distinct purpose, when-to-use guidance, and required inputs.',
+      'The model needs more parameters.',
+      'The API endpoint is slow.',
+      'The user is at fault.'
+    ],
+    a: 0,
+    e: 'Tool selection errors are usually description quality problems. Make purposes distinct, state when-to-use, and require inputs that match intent (e.g. search takes a query, get takes an id).' },
+
+  { d: 'TM', q: 'A long-running tool (10+ seconds) is best designed as:',
+    s: null,
+    o: [
+      'A synchronous call that holds the connection.',
+      'An async pattern: a start_job tool that returns a job_id immediately, and a get_job_status tool the agent can poll, possibly with a webhook for completion in production.',
+      'A tool that prints "wait" repeatedly.',
+      'A tool that always returns immediately with fake data.'
+    ],
+    a: 1,
+    e: 'Long tools should not hold conversations hostage. Start-and-poll (or start + webhook) is the production pattern.' },
+
+  { d: 'TM', q: 'An MCP server can expose three primitives. Which trio?',
+    s: null,
+    o: [
+      'tools, resources, and prompts',
+      'database connections, queries, and schemas',
+      'tokens, messages, and roles',
+      'agents, planners, and executors'
+    ],
+    a: 0,
+    e: 'MCP exposes tools (model-invoked actions), resources (addressable context data), and prompts (reusable prompt templates). The rest are unrelated concepts.' },
+
+  { d: 'TM', q: 'Why might an MCP "prompt" primitive be valuable for a team building many Claude-powered workflows?',
+    s: null,
+    o: [
+      'It is required for the API to function.',
+      'It lets server authors version and share canonical prompt templates (e.g. "summarise_ticket"), so client apps invoke the prompt by name rather than maintaining their own copies.',
+      'It bypasses safety training.',
+      'It increases the context window.'
+    ],
+    a: 1,
+    e: 'MCP prompts let teams centralise and version prompt templates. Clients invoke by name. The other answers are wrong.' },
+
+  { d: 'TM', q: 'A tool returns sensitive PII. Which design constraint is most important?',
+    s: null,
+    o: [
+      'Make the response colourful in the UI.',
+      'Minimise the PII actually returned (only fields needed for the task), apply server-side access controls scoped to the calling user, and consider redaction or hashing where the model only needs a token, not the value.',
+      'Return the data in XML.',
+      'Use a larger model.'
+    ],
+    a: 1,
+    e: 'Data minimisation, access control, and redaction are the standard PII guardrails. Format and model size are not the issue.' },
+
+  { d: 'TM', q: 'A model calls a tool with the wrong parameter type (e.g. string where number was required). The tool wrapper should:',
+    s: null,
+    o: [
+      'Crash silently.',
+      'Return a structured tool_result with is_error=true describing the type mismatch and the expected shape, so the model can retry correctly in the next turn.',
+      'Coerce the value silently.',
+      'Throw an exception that kills the agent.'
+    ],
+    a: 1,
+    e: 'Structured error feedback is the recovery loop. Silent coercion hides bugs; crashes kill autonomy.' },
+
+  { d: 'TM', q: 'You are choosing between an MCP server and a custom REST integration. The MCP advantage that matters MOST for a team building many AI workflows is:',
+    s: null,
+    o: [
+      'MCP is faster than REST.',
+      'A standard protocol means the same server works across multiple AI clients (Claude Code, Claude.ai, third-party clients) without rewriting integration code per client.',
+      'MCP avoids authentication.',
+      'MCP eliminates errors.'
+    ],
+    a: 1,
+    e: 'Portability across clients is the headline MCP benefit. Performance, auth complexity, and error rates are not the win.' },
+
+  { d: 'TM', q: 'A tool description begins "DO NOT USE THIS TOOL UNLESS ABSOLUTELY NECESSARY". The likely effect is:',
+    s: null,
+    o: [
+      'The model will never use it.',
+      'The model will be reluctant to use the tool even when it is the right choice, hurting task performance; better to give precise positive criteria for when to use it.',
+      'The model will use it more.',
+      'No effect.'
+    ],
+    a: 1,
+    e: 'Warning-heavy descriptions suppress legitimate use. Write positive selection criteria instead: "use this tool when ...".' },
+
+  { d: 'TM', q: 'An MCP server exposes 4 tools but the user only needs 1 for the current task. The cleanest pattern is:',
+    s: null,
+    o: [
+      'Always expose all 4.',
+      'Allow the client to filter or scope which tools are exposed per session or per workflow, reducing the model\'s decision space.',
+      'Delete the unused tools.',
+      'Wrap them in a single super-tool.'
+    ],
+    a: 1,
+    e: 'Per-session scoping keeps the tool surface small. Deleting tools is destructive; super-tools just hide the same complexity.' },
+
+  { d: 'TM', q: 'You build a calendar tool. To make it agent-friendly, the return value of create_event should include:',
+    s: null,
+    o: [
+      'Only a "success" string.',
+      'A structured object with the event id, start/end times in a standard format, the calendar it landed on, and any conflicts detected — enough for the agent to verify and reason about next steps.',
+      'A poem.',
+      'The user\'s entire calendar history.'
+    ],
+    a: 1,
+    e: 'Tool outputs should give the agent what it needs to verify and continue. Bare success is too thin; full history is too much.' },
+
+  { d: 'TM', q: 'For a tool that lists files, the parameter design should:',
+    s: null,
+    o: [
+      'Take no parameters and return everything.',
+      'Accept a path/prefix, optional glob pattern, pagination cursor, and result limit — giving the agent control over scope and avoiding 100MB returns.',
+      'Take only a username.',
+      'Take a sentence in natural language.'
+    ],
+    a: 1,
+    e: 'Scope + pagination + limits make file-listing tools usable in production. Returning everything bloats context; natural-language inputs are ambiguous.' },
+
+  // ===== CONTEXT MANAGEMENT & RELIABILITY (9) =====
+  { d: 'CM', q: 'You have a 90,000-token document and need Claude to answer specific questions about sections of it. The most efficient pattern is:',
+    s: null,
+    o: [
+      'Send the entire 90k tokens on every question.',
+      'Chunk and index the document, retrieve the relevant sections per query, and send only those (with metadata) plus the question.',
+      'Have Claude memorise the document.',
+      'Truncate to 8k tokens randomly.'
+    ],
+    a: 1,
+    e: 'Retrieval over chunks is the standard scalable pattern. Full-document passes are wasteful; truncation discards needed content; the model has no persistent memory.' },
+
+  { d: 'CM', q: 'Prompt caching is most cost-effective when:',
+    s: null,
+    o: [
+      'Every call has a unique prefix.',
+      'A long stable prefix (system prompt, fixed documents, few-shot examples) is reused across many calls within the cache TTL.',
+      'Calls are very short.',
+      'The model is temperature 0.'
+    ],
+    a: 1,
+    e: 'Caching pays back when the same prefix repeats. Unique prefixes get no benefit; short calls do not amortise.' },
+
+  { d: 'CM', q: 'A reliability engineer adds a circuit breaker around Claude API calls. The main benefit is:',
+    s: null,
+    o: [
+      'Lower costs always.',
+      'When the API is degraded, the breaker fails fast and prevents cascading slowdowns or outages in upstream services, also reducing pressure on the API while it recovers.',
+      'Higher quality outputs.',
+      'Larger context windows.'
+    ],
+    a: 1,
+    e: 'Circuit breakers protect upstream callers from a degraded dependency. Quality and context size are not affected.' },
+
+  { d: 'CM', q: 'For evaluation, you need deterministic comparison across runs. Which is the strongest setup?',
+    s: null,
+    o: [
+      'High temperature, random sampling.',
+      'Pinned model version, temperature 0 (or as close as supported), identical prompt formatting, and a fixed evaluation dataset — accepting that some residual variance may remain.',
+      'A different model each run.',
+      'Random eval data each time.'
+    ],
+    a: 1,
+    e: 'Pinned model + low temperature + stable prompt + fixed eval set is the reproducibility recipe. Some variance can remain even then.' },
+
+  { d: 'CM', q: 'Your 5,000-message support chat is hitting context limits. What is the best architectural response?',
+    s: null,
+    o: [
+      'Truncate the oldest messages without replacement.',
+      'Maintain a rolling summary that captures durable facts (user identity, prior decisions, open issues), keep recent turns verbatim, and reset the summary when issues close.',
+      'Increase max_tokens.',
+      'Use a smaller model.'
+    ],
+    a: 1,
+    e: 'Rolling summaries preserve continuity while reclaiming space. Truncation loses important early context; max_tokens is output-side; smaller models do not enlarge context.' },
+
+  { d: 'CM', q: 'A production agent\'s p99 latency spiked. Logs show many slow tool calls to a third-party API. The right reliability response is:',
+    s: null,
+    o: [
+      'Hope it improves.',
+      'Add timeouts, retries with exponential backoff and jitter for transient errors, a fallback path for hard failures, and observability that breaks out external-call latency separately from model latency.',
+      'Remove the tool.',
+      'Switch models.'
+    ],
+    a: 1,
+    e: 'Standard reliability stack: timeouts, retries, fallbacks, and per-dependency observability. Removing the tool may be appropriate eventually but not as the first response.' },
+
+  { d: 'CM', q: 'In a long conversation, important context from turn 3 (a user\'s stated preference) is being ignored by turn 80. The likely cause is:',
+    s: null,
+    o: [
+      'The model forgot — there is nothing to do.',
+      'Context decay: the preference is buried under intervening noise. Solutions include hoisting durable preferences into the system prompt or a rolling summary, and periodically re-stating them.',
+      'A network problem.',
+      'The user changed their mind.'
+    ],
+    a: 1,
+    e: 'Long contexts dilute earlier signal. Hoist durable facts (preferences, decisions) into more salient positions (system prompt, summary, or right before the question).' },
+
+  { d: 'CM', q: 'You enable streaming for a chat application. The user-facing benefit is:',
+    s: null,
+    o: [
+      'Lower total cost.',
+      'Lower perceived latency: the user starts seeing output within hundreds of milliseconds rather than waiting for the full response to complete.',
+      'Higher accuracy.',
+      'Smaller context window.'
+    ],
+    a: 1,
+    e: 'Streaming is a UX optimisation around perceived latency. It does not change total cost, accuracy, or context size.' },
+
+  { d: 'CM', q: 'Your application receives a 5xx error from the Claude API. The recommended client-side behaviour is:',
+    s: null,
+    o: [
+      'Retry every 10ms forever.',
+      'Retry with exponential backoff and jitter, respect any Retry-After header, cap total retries, and surface a clear error to the user/caller after the cap.',
+      'Return success and pretend it worked.',
+      'Crash the entire application.'
+    ],
+    a: 1,
+    e: 'Backoff + jitter + Retry-After + retry cap + clear failure surfacing is the standard 5xx playbook.' }
+];
+
+let answers = new Array(QUESTIONS.length).fill(null);
+let timerInterval = null;
+let timeRemaining = 120 * 60;
+let submitted = false;
+
+function renderQuestions() {
+  const container = document.getElementById('questionsContainer');
+  container.innerHTML = QUESTIONS.map((q, i) => {
+    const domain = DOMAIN_NAMES[q.d].name;
+    const optsHtml = q.o.map((opt, j) => {
+      const letter = String.fromCharCode(65 + j);
+      return `
+        <li data-q="${i}" data-o="${j}" onclick="selectAnswer(${i}, ${j})">
+          <label>
+            <span class="opt-letter">${letter}</span>
+            <span>${escapeHtml(opt)}</span>
+          </label>
+        </li>`;
+    }).join('');
+    return `
+      <div class="question" id="q${i}">
+        <div class="q-head">
+          <div class="q-num">Question <strong>${i + 1}</strong> of ${QUESTIONS.length}</div>
+          <div class="q-domain">${domain}</div>
+        </div>
+        ${q.s ? `<div class="q-scenario"><strong>Scenario:</strong> ${escapeHtml(q.s)}</div>` : ''}
+        <div class="q-prompt">${escapeHtml(q.q)}</div>
+        <ul class="options" id="opts${i}">${optsHtml}</ul>
+      </div>`;
+  }).join('');
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function selectAnswer(qIdx, oIdx) {
+  if (submitted) return;
+  answers[qIdx] = oIdx;
+  const opts = document.querySelectorAll(`#opts${qIdx} li`);
+  opts.forEach((li, j) => li.classList.toggle('selected', j === oIdx));
+  document.getElementById(`q${qIdx}`).classList.add('answered');
+  updateProgress();
+}
+
+function updateProgress() {
+  const answered = answers.filter(a => a !== null).length;
+  document.getElementById('answeredCount').textContent = answered;
+}
+
+function startExam() {
+  document.getElementById('intro').style.display = 'none';
+  document.getElementById('examArea').style.display = 'block';
+  renderQuestions();
+  startTimer();
+}
+
+function startTimer() {
+  updateTimerDisplay();
+  timerInterval = setInterval(() => {
+    timeRemaining--;
+    updateTimerDisplay();
+    if (timeRemaining <= 0) {
+      clearInterval(timerInterval);
+      submitExam();
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const m = Math.floor(timeRemaining / 60);
+  const s = timeRemaining % 60;
+  const el = document.getElementById('timer');
+  el.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  el.classList.remove('warn', 'danger');
+  if (timeRemaining <= 60) el.classList.add('danger');
+  else if (timeRemaining <= 600) el.classList.add('warn');
+}
+
+function submitExam() {
+  if (submitted) return;
+  submitted = true;
+  clearInterval(timerInterval);
+  document.getElementById('examArea').style.display = 'none';
+  document.getElementById('resultsArea').classList.add('show');
+
+  let correct = 0;
+  const perDomain = {};
+  Object.keys(DOMAIN_NAMES).forEach(k => perDomain[k] = { correct: 0, total: 0 });
+  QUESTIONS.forEach((q, i) => {
+    perDomain[q.d].total++;
+    if (answers[i] === q.a) {
+      correct++;
+      perDomain[q.d].correct++;
+    }
+  });
+
+  const pct = Math.round((correct / QUESTIONS.length) * 100);
+  const pass = pct >= 70;
+  const scoreEl = document.getElementById('scorePct');
+  scoreEl.textContent = pct + '%';
+  scoreEl.classList.add(pass ? 'pass' : 'fail');
+  document.getElementById('verdict').textContent = pass ? 'Passing score' : 'Below passing threshold (70%)';
+  document.getElementById('rawScore').textContent = `${correct} of ${QUESTIONS.length} correct · ${answers.filter(a => a === null).length} unanswered`;
+
+  document.getElementById('domainBreakdown').innerHTML = Object.entries(perDomain).map(([k, v]) => {
+    const dpct = v.total ? Math.round((v.correct / v.total) * 100) : 0;
+    const klass = dpct >= 70 ? 'pass' : 'fail';
+    const dInfo = DOMAIN_NAMES[k];
+    return `
+      <div class="domain-row">
+        <div class="d-name">${dInfo.name}<span>${dInfo.weight}% of exam</span></div>
+        <div class="d-score">${v.correct}/${v.total} · ${dpct}%</div>
+        <div class="d-bar"><div class="fill ${klass}" style="width:${dpct}%"></div></div>
+      </div>`;
+  }).join('');
+
+  document.getElementById('reviewContainer').innerHTML = QUESTIONS.map((q, i) => {
+    const user = answers[i];
+    const isCorrect = user === q.a;
+    const isUnanswered = user === null;
+    const klass = isUnanswered ? 'unanswered' : (isCorrect ? 'correct' : 'incorrect');
+    const statusText = isUnanswered ? 'Unanswered' : (isCorrect ? 'Correct' : 'Incorrect');
+    const optsHtml = q.o.map((opt, j) => {
+      const letter = String.fromCharCode(65 + j);
+      let lineClass = 'ans-line';
+      if (j === q.a) lineClass += ' correct-ans';
+      if (j === user && j !== q.a) lineClass += ' your';
+      if (j === user && j === q.a) lineClass += ' your correct';
+      return `<div class="${lineClass}"><strong>${letter}.</strong> ${escapeHtml(opt)}</div>`;
+    }).join('');
+    return `
+      <div class="review-q ${klass}">
+        <div class="status ${klass}">Q${i+1} · ${DOMAIN_NAMES[q.d].name} · ${statusText}</div>
+        <div class="q-text">${escapeHtml(q.q)}</div>
+        ${q.s ? `<div style="font-size:0.85rem;color:var(--muted);margin-bottom:0.5rem;"><em>Scenario:</em> ${escapeHtml(q.s)}</div>` : ''}
+        ${optsHtml}
+        <div class="explanation"><strong>Why:</strong> ${escapeHtml(q.e)}</div>
+      </div>`;
+  }).join('');
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
